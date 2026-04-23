@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp3.Features.Lobby.LobbyPage"
+             Title="Lobby"
+             Shell.NavBarIsVisible="False"
+             FlowDirection="LeftToRight"
+             BackgroundColor="{StaticResource AppBackground}">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource HeaderGradientBrush}" Padding="20,18" StrokeShape="Rectangle">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout>
+                    <Label Text="{Binding DisplayName, StringFormat='Hello, {0}!'}"
+                           FontSize="22"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="White" />
+                    <Label Text="{Binding LocalIP, StringFormat='IP: {0}'}"
+                           FontSize="12"
+                           TextColor="{StaticResource HeaderSubtext}" />
+                </VerticalStackLayout>
+                <Border Grid.Column="1" BackgroundColor="{StaticResource HeaderIconBg}"
+                        StrokeShape="RoundRectangle 20"
+                        WidthRequest="40" HeightRequest="40" Padding="0" VerticalOptions="Center">
+                    <Label Text="&#x1F310;" FontSize="20"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1" Padding="16,12">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Group Chat Card -->
+                <Border BackgroundColor="{StaticResource AppSurface}" Padding="0"
+                        StrokeShape="RoundRectangle 18"
+                        Stroke="{StaticResource AppDivider}">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource SoftShadowBrush}" Offset="0,3" Radius="10" Opacity="0.14" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenGroupChatCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid Padding="16" ColumnDefinitions="Auto,*,Auto">
+                        <Border BackgroundColor="{StaticResource AppLightBlue}"
+                                StrokeShape="RoundRectangle 24"
+                                WidthRequest="48" HeightRequest="48" Padding="0" Stroke="Transparent">
+                            <Label Text="&#x1F465;" FontSize="22"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="12,0,0,0">
+                            <Label Text="Group Chat" FontSize="16" FontFamily="OpenSansSemibold" TextColor="{StaticResource AppTextPrimary}" />
+                            <Label Text="Chat with everyone on the network" FontSize="12" TextColor="{StaticResource AppTextSecondary}" />
+                        </VerticalStackLayout>
+                        <!-- Unread badge -->
+                        <Border Grid.Column="2" BackgroundColor="{StaticResource UnreadBadge}"
+                                StrokeShape="RoundRectangle 12"
+                                MinimumWidthRequest="24" HeightRequest="24"
+                                Padding="6,2" Stroke="Transparent" VerticalOptions="Center"
+                                IsVisible="{Binding GroupUnreadCount, Converter={StaticResource UnreadBadgeVisibilityConverter}}">
+                            <Label Text="{Binding GroupUnreadCount}" FontSize="11"
+                                   TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Online Users Header -->
+                <Grid ColumnDefinitions="*,Auto" Margin="4,8,4,0">
+                    <Label Text="Online Users" FontSize="16" FontFamily="OpenSansSemibold" TextColor="{StaticResource AppTextPrimary}" />
+                    <Label Grid.Column="1" Text="{Binding OnlinePeers.Count, StringFormat='{0} online'}"
+                           FontSize="13" TextColor="{StaticResource OnlineDot}" VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Online Users List -->
+                <CollectionView ItemsSource="{Binding OnlinePeers}"
+                                SelectionMode="None"
+                                Margin="0,0,0,0">
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Padding="20" HorizontalOptions="Center">
+                            <Label Text="&#x1F50D;" FontSize="36" HorizontalTextAlignment="Center" />
+                            <Label Text="Searching for users on your network..."
+                                   FontSize="14" TextColor="{StaticResource AppTextSecondary}"
+                                   HorizontalTextAlignment="Center" Margin="0,8,0,0" />
+                            <ActivityIndicator IsRunning="True" Color="{StaticResource AccentBlue}"
+                                               Margin="0,12,0,0" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="{StaticResource AppSurface}" Padding="0"
+                                    StrokeShape="RoundRectangle 16"
+                                    Stroke="{StaticResource AppDivider}" Margin="0,0,0,8">
+                                <Border.Shadow>
+                                    <Shadow Brush="{StaticResource SoftShadowBrush}" Offset="0,2" Radius="6" Opacity="0.12" />
+                                </Border.Shadow>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenPrivateChatCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid Padding="14" ColumnDefinitions="Auto,*,Auto">
+                                    <!-- Avatar -->
+                                    <Border BackgroundColor="{StaticResource AccentBlue}"
+                                            StrokeShape="RoundRectangle 22"
+                                            WidthRequest="44" HeightRequest="44" Padding="0" Stroke="Transparent">
+                                        <Label Text="{Binding Initials}" FontSize="16" FontFamily="OpenSansSemibold"
+                                               TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <!-- Info -->
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="12,0,0,0">
+                                        <Label Text="{Binding Name}" FontSize="15" FontFamily="OpenSansSemibold" TextColor="{StaticResource AppTextPrimary}" />
+                                        <HorizontalStackLayout Spacing="4">
+                                            <Ellipse Fill="{StaticResource OnlineDot}" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
+                                            <Label Text="Online" FontSize="12" TextColor="{StaticResource OnlineDot}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                    <!-- Unread -->
+                                    <Border Grid.Column="2" BackgroundColor="{StaticResource UnreadBadge}"
+                                            StrokeShape="RoundRectangle 12"
+                                            MinimumWidthRequest="24" HeightRequest="24"
+                                            Padding="6,2" Stroke="Transparent" VerticalOptions="Center"
+                                            IsVisible="{Binding UnreadCount, Converter={StaticResource UnreadBadgeVisibilityConverter}}">
+                                        <Label Text="{Binding UnreadCount}" FontSize="11"
+                                               TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

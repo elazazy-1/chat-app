@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp3.Features.Join.JoinPage"
+             Shell.NavBarIsVisible="False"
+             FlowDirection="LeftToRight"
+             Background="{StaticResource JoinBackgroundBrush}">
+
+    <Grid RowDefinitions="*,Auto,*" RowSpacing="0">
+
+        <!-- Top spacer -->
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="End" HorizontalOptions="Center"
+                             Margin="0,0,0,16">
+            <!-- App Icon -->
+            <Border BackgroundColor="{StaticResource AppSurfaceAlt}"
+                    Stroke="{StaticResource AppDivider}"
+                    WidthRequest="88"
+                    HeightRequest="88"
+                    HorizontalOptions="Center"
+                    Margin="0,0,0,20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="44" />
+                </Border.StrokeShape>
+                <Label Text="&#x1F4AC;"
+                       FontSize="40"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
+
+            <!-- Title -->
+            <Label Text="DS Project"
+                   FontSize="32"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource AppTextPrimary}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,6" />
+
+            <Label Text="Connect and chat with people on your local network"
+                   FontSize="14"
+                   TextColor="{StaticResource AppTextSecondary}"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <!-- Join Card -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource AppSurface}"
+                Stroke="{StaticResource AppDivider}"
+                StrokeThickness="1"
+                Padding="28,24"
+                Margin="24,0"
+                HorizontalOptions="Fill">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource SoftShadowBrush}" Offset="0,6" Radius="18" Opacity="0.18" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="20">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Welcome"
+                           FontSize="22"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource AppTextPrimary}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Enter your name to start chatting"
+                           FontSize="13"
+                           TextColor="{StaticResource AppTextSecondary}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <Border BackgroundColor="{StaticResource AppSurfaceAlt}"
+                        Stroke="{StaticResource AppDivider}"
+                        StrokeThickness="1"
+                        Padding="14,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="&#x1F464;"
+                               FontSize="20"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource AppTextHint}"
+                               Margin="2,0,0,0" />
+                        <Entry Grid.Column="1"
+                               x:Name="NameEntry"
+                               Text="{Binding DisplayName}"
+                               Placeholder="Your display name..."
+                               PlaceholderColor="{StaticResource AppTextHint}"
+                               FontSize="16"
+                               TextColor="{StaticResource AppTextPrimary}"
+                               BackgroundColor="Transparent"
+                               ReturnType="Go"
+                               Completed="OnEntryCompleted"
+                               MaxLength="30"
+                               ClearButtonVisibility="WhileEditing"
+                               VerticalOptions="Center"
+                               Focused="OnNameEntryFocused" />
+                    </Grid>
+                </Border>
+
+                <Button Text="Join Chat"
+                        Command="{Binding JoinCommand}"
+                        BackgroundColor="{StaticResource AccentBlue}"
+                        TextColor="White"
+                        FontSize="16"
+                        FontFamily="OpenSansSemibold"
+                        CornerRadius="14"
+                        HeightRequest="52"
+                        HorizontalOptions="Fill" />
+
+                <ActivityIndicator IsRunning="{Binding IsJoining}"
+                                   IsVisible="{Binding IsJoining}"
+                                   Color="{StaticResource AccentBlue}"
+                                   HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Bottom spacer with footer -->
+        <VerticalStackLayout Grid.Row="2" VerticalOptions="Start" HorizontalOptions="Center"
+                             Margin="0,20,0,0">
+            <Label Text="No internet required. Works over your Wi-Fi network."
+                   FontSize="12"
+                   TextColor="{StaticResource AppTextHint}"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

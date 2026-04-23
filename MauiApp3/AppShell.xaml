@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MauiApp3.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:join="clr-namespace:MauiApp3.Features.Join"
+    xmlns:lobby="clr-namespace:MauiApp3.Features.Lobby"
+    Title="DS Project"
+    FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False">
+
+    <ShellContent
+        Title="Join"
+        ContentTemplate="{DataTemplate join:JoinPage}"
+        Route="JoinPage" />
+
+    <ShellContent
+        Title="Lobby"
+        ContentTemplate="{DataTemplate lobby:LobbyPage}"
+        Route="LobbyPage" />
+
+</Shell>

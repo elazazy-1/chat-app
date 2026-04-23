@@ -1,0 +1,228 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio project files
+*.sln.iml
+*.csproj.user
+*.sln.VisualState.xml
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+project.lock.json
+project.assets.json
+nuget.config
+.nuget/packages/
+packages/
+
+# Platform-specific build directories
+.iOS/
+.Android/
+.MacCatalyst/
+.Windows/
+
+# MAUI specific
+.maui
+maui.d.ts
+MauiBindings.cs
+
+# Entity Framework
+*.db
+*.db-shm
+*.db-wal
+
+# Application Insights
+ApplicationInsights.config
+*.ApplicationInsights.config
+
+# Rider
+.idea/
+.idea_modules/
+*.sln.iml
+riderModule.iml
+*.jb2318
+*.exe
+
+# Resharper
+_ReSharper_Modules/
+_ReSharper.*/
+*.resharper
+*.resharper.user
+resharper.user.xml
+
+# DotCover
+.dotCover/
+
+# AxoCover
+.axoCover/*
+!.axoCover/settings.json
+
+# Coverlet
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# Test Results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Coverage reports
+coverage/
+OpenCover/
+
+# NCrunch
+._NCrunch_*
+.ncrunch*
+.crunch*.local.xml
+nCrunchTemp_*
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Web workbench
+.WebReference/
+
+# Installshield output folder
+[Ee]xpress/
+
+# DocProject is a documentation generator add-in
+DocProject/buildhelp/
+DocProject/Help/*.HxT
+DocProject/Help/*.HxC
+DocProject/Help/*.hhc
+DocProject/Help/*.hhk
+DocProject/Help/*.hhp
+DocProject/Help/Html2
+DocProject/Help/html
+
+# Publish Web Output
+PublishProfiles/
+*.azurePubxml
+*.publishproj
+PublishScripts/
+publish/
+PublishTemp/
+
+# PrecompiledWeb
+PrecompiledWeb/
+App_Data/
+bin/
+obj/
+
+# Android
+*.apk
+*.jks
+*.keystore
+local.properties
+build/
+.gradle/
+gradle-app.setting
+gradlew
+gradlew.bat
+.androidnativelib/
+
+# Android Studio
+.android/
+.idea/
+Android-keystore/
+*.jmx
+local.properties
+
+# Xamarin Studio
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+xcodebuild.log
+*.ipa
+*.dSYM
+*.app
+*.exe_manifest
+*.signed.apk
+.DS_Store
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+.#*
+
+# User-specific files
+.env
+.env.local
+*.key
+*.pem
+secrets.json
+appsettings.*.json
+!appsettings.json
+
+# VS Code extensions
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# OS files
+.DS_Store
+Thumbs.db
+.Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE files
+*.swp
+*.swo
+*~
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Misc
+
+# Common development files
+.env
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

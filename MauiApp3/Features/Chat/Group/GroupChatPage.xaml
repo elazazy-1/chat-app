@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MauiApp3.Models"
+             x:Class="MauiApp3.Features.Chat.Group.GroupChatPage"
+             Title="Group Chat"
+             Shell.NavBarIsVisible="False"
+             FlowDirection="LeftToRight"
+             BackgroundColor="{StaticResource ChatBackground}">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource HeaderGradientBrush}" Padding="12,14" StrokeShape="Rectangle">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0" Text="&lt;" FontSize="24"
+                        BackgroundColor="Transparent" TextColor="White"
+                        Padding="8" WidthRequest="44" HeightRequest="44"
+                        Clicked="OnBackClicked" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="8,0">
+                    <Label Text="Group Chat" FontSize="18" FontFamily="OpenSansSemibold" TextColor="White" />
+                    <Label Text="Everyone on the network" FontSize="11" TextColor="{StaticResource HeaderSubtext}" />
+                </VerticalStackLayout>
+                <Border Grid.Column="2" BackgroundColor="{StaticResource HeaderIconBg}"
+                        StrokeShape="RoundRectangle 20"
+                        WidthRequest="40" HeightRequest="40" Padding="0">
+                    <Label Text="&#x1F465;" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Messages + Emoji + Input -->
+        <Grid Grid.Row="1" RowDefinitions="*,Auto,Auto" RowSpacing="0">
+            <CollectionView Grid.Row="0"
+                            x:Name="MessagesCollection"
+                            ItemsSource="{Binding Messages}"
+                            Margin="8,4"
+                            ItemsUpdatingScrollMode="KeepLastItemInView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ChatMessage">
+                        <Grid Padding="4,2">
+                            <!-- System message -->
+                            <Frame BackgroundColor="{StaticResource ChatSystemMessage}" CornerRadius="12" Padding="10,6"
+                                   HasShadow="False" HorizontalOptions="Center"
+                                   IsVisible="{Binding ., Converter={StaticResource SystemMessageVisibilityConverter}}">
+                                <Label Text="{Binding Content}" FontSize="12" TextColor="{StaticResource AppTextSecondary}"
+                                       HorizontalTextAlignment="Center" />
+                            </Frame>
+
+                            <!-- Chat bubble -->
+                            <VerticalStackLayout
+                                IsVisible="{Binding ., Converter={StaticResource NotSystemMessageVisibilityConverter}}"
+                                HorizontalOptions="{Binding ., Converter={StaticResource MessageAlignmentConverter}}">
+
+                                <!-- Sender name -->
+                                <Label Text="{Binding SenderName}" FontSize="11" FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentBlue}" Margin="8,0,8,2"
+                                       IsVisible="{Binding ., Converter={StaticResource SenderVisibilityConverter}}" />
+
+                                <Frame BackgroundColor="{Binding ., Converter={StaticResource MessageBubbleColorConverter}}"
+                                       CornerRadius="16" Padding="12,8" HasShadow="False"
+                                       MaximumWidthRequest="300">
+                                    <VerticalStackLayout Spacing="4">
+                                        <!-- Text content -->
+                                        <Label Text="{Binding Content}" FontSize="15" TextColor="{StaticResource AppTextPrimary}"
+                                               IsVisible="{Binding ., Converter={StaticResource IsTextMessageConverter}}"
+                                               LineBreakMode="WordWrap" />
+
+                                        <!-- File content -->
+                                        <VerticalStackLayout IsVisible="{Binding ., Converter={StaticResource IsFileMessageConverter}}" Spacing="4">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="&#x1F4CE;" FontSize="18" VerticalOptions="Center" />
+                                                <Label Text="{Binding FileName}" FontSize="14" TextColor="{StaticResource AppTextPrimary}"
+                                                       VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                            </HorizontalStackLayout>
+                                            <Button Text="Save File" FontSize="12" HeightRequest="32"
+                                                    BackgroundColor="{StaticResource AccentBlue}" TextColor="White"
+                                                    CornerRadius="8" Padding="10,4"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SaveFileCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Audio content -->
+                                        <HorizontalStackLayout IsVisible="{Binding ., Converter={StaticResource IsAudioMessageConverter}}" Spacing="8">
+                                            <Button Text="&#x25B6;" FontSize="16" WidthRequest="36" HeightRequest="36"
+                                                    BackgroundColor="{StaticResource AccentBlue}" TextColor="White"
+                                                    CornerRadius="18" Padding="0"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.PlayAudioCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                            <Label Text="Voice Message" FontSize="13" TextColor="{StaticResource AppTextSecondary}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+
+                                        <!-- Timestamp -->
+                                        <Label Text="{Binding Timestamp, Converter={StaticResource TimestampConverter}}"
+                                               FontSize="10" TextColor="{StaticResource AppTextHint}" HorizontalTextAlignment="End" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Emoji Panel -->
+            <Border Grid.Row="1" BackgroundColor="{StaticResource AppSurface}" Padding="8"
+                    StrokeShape="Rectangle"
+                    IsVisible="{Binding IsEmojiPanelVisible}" HeightRequest="180">
+                <CollectionView ItemsSource="{Binding Emojis}" SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="8" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Label Text="{Binding .}" FontSize="24" HorizontalTextAlignment="Center"
+                                   Padding="4" VerticalTextAlignment="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.InsertEmojiCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+            <!-- Input Bar -->
+            <Border Grid.Row="2" x:Name="InputBarFrame" BackgroundColor="{StaticResource AppSurface}"
+                    Stroke="{StaticResource AppDivider}" StrokeThickness="1" Padding="8,6" StrokeShape="Rectangle">
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="6">
+                    <!-- Emoji -->
+                    <Button Grid.Column="0" Text="&#x1F60A;" FontSize="20" Padding="4"
+                            BackgroundColor="Transparent"
+                            Command="{Binding ToggleEmojiCommand}"
+                            WidthRequest="40" HeightRequest="40" />
+                    <!-- Attach -->
+                    <Button Grid.Column="1" Text="&#x1F4CE;" FontSize="20" Padding="4"
+                            BackgroundColor="Transparent"
+                            Command="{Binding AttachFileCommand}"
+                            WidthRequest="40" HeightRequest="40" />
+                    <!-- Text Entry -->
+                    <Border Grid.Column="2" BackgroundColor="{StaticResource AppSurfaceAlt}"
+                            Stroke="{StaticResource AppDivider}"
+                            StrokeShape="RoundRectangle 20"
+                            Padding="12,0">
+                        <Entry Text="{Binding MessageText}" Placeholder="Type a message..."
+                               PlaceholderColor="{StaticResource AppTextHint}" FontSize="15" TextColor="{StaticResource AppTextPrimary}"
+                               BackgroundColor="Transparent" ReturnType="Send"
+                               ReturnCommand="{Binding SendMessageCommand}" />
+                    </Border>
+                    <!-- Mic (idle) -->
+                    <Button Grid.Column="3"
+                            Text="&#x1F3A4;"
+                            FontSize="20" Padding="4"
+                            BackgroundColor="{StaticResource AppSurfaceAlt}"
+                            TextColor="{StaticResource AppTextSecondary}" CornerRadius="20"
+                            Command="{Binding ToggleRecordingCommand}"
+                            WidthRequest="40" HeightRequest="40"
+                            IsVisible="{Binding IsRecording, Converter={StaticResource InverseBoolConverter}}" />
+                    <!-- Mic (recording) -->
+                    <Button Grid.Column="3"
+                            Text="&#x1F534;"
+                            FontSize="20" Padding="4"
+                            BackgroundColor="{StaticResource UnreadBadge}"
+                            TextColor="White" CornerRadius="20"
+                            Command="{Binding ToggleRecordingCommand}"
+                            WidthRequest="40" HeightRequest="40"
+                            IsVisible="{Binding IsRecording}" />
+                    <!-- Send -->
+                    <Button Grid.Column="4" Text="&#x27A4;" FontSize="20" Padding="4"
+                            BackgroundColor="{StaticResource AccentBlue}" TextColor="White"
+                            CornerRadius="20"
+                            Command="{Binding SendMessageCommand}"
+                            WidthRequest="40" HeightRequest="40" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+
+</ContentPage>

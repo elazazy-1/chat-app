@@ -1,0 +1,30 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MauiApp3"
+             xmlns:conv="clr-namespace:MauiApp3.Converters"
+             x:Class="MauiApp3.App"
+             UserAppTheme="Light">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <conv:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
+            <conv:MessageBubbleColorConverter x:Key="MessageBubbleColorConverter" />
+            <conv:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <conv:SystemMessageVisibilityConverter x:Key="SystemMessageVisibilityConverter" />
+            <conv:NotSystemMessageVisibilityConverter x:Key="NotSystemMessageVisibilityConverter" />
+            <conv:SenderVisibilityConverter x:Key="SenderVisibilityConverter" />
+            <conv:IsFileMessageConverter x:Key="IsFileMessageConverter" />
+            <conv:IsAudioMessageConverter x:Key="IsAudioMessageConverter" />
+            <conv:IsTextMessageConverter x:Key="IsTextMessageConverter" />
+            <conv:TimestampConverter x:Key="TimestampConverter" />
+            <conv:UnreadBadgeVisibilityConverter x:Key="UnreadBadgeVisibilityConverter" />
+            <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
