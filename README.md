@@ -1,12 +1,10 @@
 # DS Project
 
-A cross-platform mobile application built with **.NET MAUI** (Multi-platform App UI), supporting Android, iOS, macOS, and Windows platforms.
+A cross-platform application built with **.NET MAUI** (Multi-platform App UI), supporting Android and Windows.
 
 ## 📱 Supported Platforms
 
 - **Android** (API 21+)
-- **iOS** (15.0+)
-- **macOS Catalyst** (15.0+)
 - **Windows** (10.0.17763.0+)
 
 ## 🛠 Technology Stack
@@ -55,8 +53,6 @@ MauiApp3/
 - **IDE**: Visual Studio 2022 (17.0+) or Visual Studio Code
 - **Platform-specific requirements**:
   - **Android**: Android SDK (API 21+), Android Emulator or physical device
-  - **iOS**: Xcode 14.0+ (macOS only)
-  - **macOS**: Xcode 14.0+ and MAUI workload
   - **Windows**: Windows 10/11
 
 ### Installation
@@ -84,16 +80,6 @@ MauiApp3/
 dotnet build -f net10.0-android -c Debug
 ```
 
-**For iOS** (macOS only):
-```bash
-dotnet build -f net10.0-ios -c Debug
-```
-
-**For macOS Catalyst** (macOS only):
-```bash
-dotnet build -f net10.0-maccatalyst -c Debug
-```
-
 **For Windows**:
 ```bash
 dotnet build -f net10.0-windows10.0.19041.0 -c Debug
@@ -106,7 +92,7 @@ dotnet build -f net10.0-windows10.0.19041.0 -c Debug
 
 ## 🎯 Features
 
-- Cross-platform mobile development using a single codebase
+- Cross-platform development for Android and Windows using a single codebase
 - XAML-based UI with data binding and MVVM support
 - Platform-specific customizations where needed
 - Audio plugin integration for multimedia capabilities
@@ -119,11 +105,6 @@ dotnet build -f net10.0-windows10.0.19041.0 -c Debug
 **Android**:
 ```bash
 dotnet publish -f net10.0-android -c Release
-```
-
-**iOS**:
-```bash
-dotnet publish -f net10.0-ios -c Release
 ```
 
 **Windows**:
@@ -178,7 +159,7 @@ Found a bug? Please open an issue on [GitHub Issues](../../issues) with:
 
 ## 👤 Author
 
-Created by [Your Name]
+Created by Ahmed Salah
 
 ---
 
