@@ -57,15 +57,19 @@ public class JoinViewModel : INotifyPropertyChanged
     /// </summary>
     private async Task JoinAsync()
     {
-        if (!CanJoin) return;
+        if (!CanJoin) return; // Prevent double joins if the button is mashed
 
         IsJoining = true;
 
         try
         {
+            // Start the UDP broadcasting loop to announce our presence on the LAN
             await _discoveryService.StartBroadcastingAsync(DisplayName.Trim());
+            
+            // Start the TCP listener to accept incoming messages and files
             await _chatService.StartListeningAsync(5001);
 
+            // Navigation is successful, move the user into the main lobby
             await Shell.Current.GoToAsync("//LobbyPage");
         }
         catch (Exception ex)
@@ -78,21 +82,37 @@ public class JoinViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Notifies the UI and the JoinCommand to re-evaluate whether the user is allowed to join the lobby.
+    /// </summary>
     private void NotifyCanJoinChanged()
     {
+        // Notify the UI that the CanJoin property might have changed
         OnPropertyChanged(nameof(CanJoin));
+        
+        // Also explicitly notify the ICommand so bound buttons re-evaluate their enabled state
         if (JoinCommand is Command cmd)
             cmd.ChangeCanExecute();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Triggers the PropertyChanged event to notify UI bindings that a property has been updated.
+    /// </summary>
     protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+        // Safely invoke the PropertyChanged event if there are any UI subscribers attached
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+    /// <summary>
+    /// Updates the backing field of a property and triggers a UI update only if the value actually changed.
+    /// </summary>
+    /// <returns>True if the value was changed; false otherwise.</returns>
     protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
     {
+        // Prevent redundant UI updates and loops if the value hasn't actually changed
         if (EqualityComparer<T>.Default.Equals(backingStore, value)) return false;
+        
         backingStore = value;
         OnPropertyChanged(propertyName);
         return true;

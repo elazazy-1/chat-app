@@ -91,6 +91,8 @@ public partial class GroupChatPage : ContentPage
 
     private void OnSizeChanged(object? sender, EventArgs e)
     {
+        // Detect if the software keyboard popped up (which decreases the page height significantly).
+        // If so, force a scroll to the bottom so the latest message remains visible above the keyboard.
         if (_lastHeight > 0 && Height < _lastHeight - 50)
         {
             ScrollToEnd();
@@ -100,6 +102,7 @@ public partial class GroupChatPage : ContentPage
 
     private void ScrollToEnd()
     {
+        // Safely attempt to scroll the CollectionView to the last message in the list
         if (BindingContext is GroupChatViewModel vm && vm.Messages.Count > 0)
         {
             var last = vm.Messages[^1];
@@ -109,7 +112,7 @@ public partial class GroupChatPage : ContentPage
                 {
                     MessagesCollection.ScrollTo(last, position: ScrollToPosition.End, animate: false);
                 }
-                catch { }
+                catch { } // Ignore scrolling exceptions that might occur during rapid UI teardown
             });
         }
     }

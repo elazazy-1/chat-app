@@ -74,6 +74,9 @@ public class GroupChatViewModel : INotifyPropertyChanged
         _discoveryService.PeerLost += OnPeerLeft;
     }
 
+    /// <summary>
+    /// Handles incoming messages from the ChatService, appending group messages to the UI.
+    /// </summary>
     private void OnMessageReceived(object? sender, ChatMessage msg)
     {
         if (!msg.IsGroupMessage) return;
@@ -84,6 +87,9 @@ public class GroupChatViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Injects a system message into the chat when a new peer joins the LAN.
+    /// </summary>
     private void OnPeerJoined(object? sender, Peer peer)
     {
         MainThread.BeginInvokeOnMainThread(() =>
@@ -97,6 +103,9 @@ public class GroupChatViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Injects a system message into the chat when a peer drops off the LAN.
+    /// </summary>
     private void OnPeerLeft(object? sender, Peer peer)
     {
         MainThread.BeginInvokeOnMainThread(() =>
@@ -110,10 +119,14 @@ public class GroupChatViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Constructs and broadcasts a standard text message to the group.
+    /// </summary>
     private async Task SendTextMessageAsync()
     {
         if (string.IsNullOrWhiteSpace(MessageText)) return;
 
+        // Construct the message object with our metadata
         var msg = new ChatMessage
         {
             SenderName = _discoveryService.DisplayName,
@@ -121,26 +134,34 @@ public class GroupChatViewModel : INotifyPropertyChanged
             Content = MessageText.Trim(),
             MessageType = MessageType.Text,
             IsGroupMessage = true,
-            IsMine = true
+            IsMine = true // Flags this message to render on the right side of the UI
         };
 
+        // Instantly add to local UI for responsiveness
         Messages.Add(msg);
         MessageText = string.Empty;
 
+        // Transmit to all other peers asynchronously
         await _chatService.BroadcastMessageAsync(msg);
     }
 
+    /// <summary>
+    /// Opens the native file picker and broadcasts the selected file to the group.
+    /// </summary>
     private async Task AttachFileAsync()
     {
         try
         {
+            // Open the native OS file picker
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
                 PickerTitle = "Select a file to send"
             });
 
+            // User canceled the picker
             if (result == null) return;
 
+            // Transmit the selected file to the entire group
             await _chatService.BroadcastFileAsync(result.FullPath);
         }
         catch (Exception ex)
@@ -149,19 +170,25 @@ public class GroupChatViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Toggles the microphone recording state and broadcasts the audio when stopped.
+    /// </summary>
     private async Task ToggleRecordingAsync()
     {
         if (IsRecording)
         {
+            // We were already recording, so stop the recorder and retrieve the generated WAV data
             IsRecording = false;
             var audioData = await _audioService.StopRecordingAsync();
             if (audioData != null && audioData.Length > 0)
             {
+                // Broadcast the successfully captured voice message to everyone in the group
                 await _chatService.BroadcastAudioAsync(audioData);
             }
         }
         else
         {
+            // We are not recording, so request microphone permissions and start capturing audio
             var started = await _audioService.StartRecordingAsync();
             if (started)
             {
@@ -170,6 +197,9 @@ public class GroupChatViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Plays the embedded audio data from a voice message.
+    /// </summary>
     private async Task PlayAudioAsync(ChatMessage msg)
     {
         if (msg?.FileData != null)
@@ -178,16 +208,21 @@ public class GroupChatViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Saves the embedded file data from a message to the local device storage.
+    /// </summary>
     private async Task SaveFileAsync(ChatMessage msg)
     {
         if (msg?.FileData == null || string.IsNullOrEmpty(msg.FileName)) return;
 
         try
         {
+            // Ensure the filename doesn't contain invalid characters or paths
             var safeFileName = Path.GetFileName(msg.FileName);
             if (string.IsNullOrWhiteSpace(safeFileName))
                 safeFileName = "file";
 
+            // Delegate to the platform-specific download helper to save the byte array
             var targetPath = await DownloadPathHelper.SaveBytesAsync(safeFileName, msg.FileData);
             await Shell.Current.DisplayAlert("File Saved", $"Saved to: {targetPath}", "OK");
         }
@@ -200,11 +235,14 @@ public class GroupChatViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+        // Safely invoke the PropertyChanged event if there are any UI subscribers attached
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
     {
+        // Prevent redundant UI updates and loops if the value hasn't actually changed
         if (EqualityComparer<T>.Default.Equals(backingStore, value)) return false;
+        
         backingStore = value;
         OnPropertyChanged(propertyName);
         return true;

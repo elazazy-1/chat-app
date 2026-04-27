@@ -93,12 +93,22 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         _chatService.MessageReceived += OnMessageReceived;
     }
 
+    /// <summary>
+    /// Resolves the specific peer we are communicating with from the active discovery list,
+    /// or creates a fallback peer object if they dropped offline.
+    /// </summary>
     private Peer? GetTargetPeer()
     {
+        // Try to retrieve the peer from the active discovery service list.
+        // If they momentarily dropped off, construct a dummy peer object using the known IP/Name
+        // so we can still attempt a direct TCP connection.
         return _discoveryService.GetActivePeers().FirstOrDefault(p => p.IPAddress == PeerIP)
                ?? new Peer { IPAddress = PeerIP, Name = PeerName, Port = 5001 };
     }
 
+    /// <summary>
+    /// Handles incoming messages, filtering only those targeted between the local user and this specific peer.
+    /// </summary>
     private void OnMessageReceived(object? sender, ChatMessage msg)
     {
         if (msg.IsGroupMessage) return;
@@ -111,6 +121,9 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         });
     }
 
+    /// <summary>
+    /// Constructs and sends a targeted text message to the specific peer.
+    /// </summary>
     private async Task SendTextMessageAsync()
     {
         if (string.IsNullOrWhiteSpace(MessageText)) return;
@@ -118,6 +131,7 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         var peer = GetTargetPeer();
         if (peer == null) return;
 
+        // Construct the message targeting only this specific peer's IP
         var msg = new ChatMessage
         {
             SenderName = _discoveryService.DisplayName,
@@ -126,19 +140,24 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
             MessageType = MessageType.Text,
             IsGroupMessage = false,
             TargetIP = PeerIP,
-            IsMine = true
+            IsMine = true // Flags this message to render on the right side of the UI
         };
 
         Messages.Add(msg);
         MessageText = string.Empty;
 
+        // Transmit directly via TCP to the target peer
         await _chatService.SendMessageAsync(peer, msg);
     }
 
+    /// <summary>
+    /// Opens the native file picker and sends the selected file to the specific peer.
+    /// </summary>
     private async Task AttachFileAsync()
     {
         try
         {
+            // Open the native OS file picker
             var result = await FilePicker.Default.PickAsync(new PickOptions
             {
                 PickerTitle = "Select a file to send"
@@ -148,6 +167,7 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
             var peer = GetTargetPeer();
             if (peer == null) return;
 
+            // Transmit the selected file specifically to this peer
             await _chatService.SendFileAsync(peer, result.FullPath, false);
         }
         catch (Exception ex)
@@ -156,10 +176,14 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
+    /// <summary>
+    /// Toggles the microphone recording state and sends the audio to the specific peer when stopped.
+    /// </summary>
     private async Task ToggleRecordingAsync()
     {
         if (IsRecording)
         {
+            // We were already recording, so stop the recorder and retrieve the generated WAV data
             IsRecording = false;
             var audioData = await _audioService.StopRecordingAsync();
             if (audioData != null && audioData.Length > 0)
@@ -167,12 +191,14 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
                 var peer = GetTargetPeer();
                 if (peer != null)
                 {
+                    // Send the successfully captured voice message specifically to this target peer
                     await _chatService.SendAudioAsync(peer, audioData, false);
                 }
             }
         }
         else
         {
+            // We are not recording, so request microphone permissions and start capturing audio
             var started = await _audioService.StartRecordingAsync();
             if (started)
             {
@@ -181,6 +207,9 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
+    /// <summary>
+    /// Plays the embedded audio data from a voice message.
+    /// </summary>
     private async Task PlayAudioAsync(ChatMessage msg)
     {
         if (msg?.FileData != null)
@@ -189,16 +218,21 @@ public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
+    /// <summary>
+    /// Saves the embedded file data from a message to the local device storage.
+    /// </summary>
     private async Task SaveFileAsync(ChatMessage msg)
     {
         if (msg?.FileData == null || string.IsNullOrEmpty(msg.FileName)) return;
 
         try
         {
+            // Ensure the filename doesn't contain invalid characters or paths
             var safeFileName = Path.GetFileName(msg.FileName);
             if (string.IsNullOrWhiteSpace(safeFileName))
                 safeFileName = "file";
 
+            // Delegate to the platform-specific download helper to save the byte array
             var targetPath = await DownloadPathHelper.SaveBytesAsync(safeFileName, msg.FileData);
             await Shell.Current.DisplayAlert("File Saved", $"Saved to: {targetPath}", "OK");
         }

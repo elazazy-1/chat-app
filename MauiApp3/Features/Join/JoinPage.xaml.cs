@@ -16,12 +16,14 @@ public partial class JoinPage : ContentPage
 
     private void OnEntryCompleted(object? sender, EventArgs e)
     {
+        // Automatically trigger the join process when the user presses "Enter" on their soft keyboard
         if (_viewModel.JoinCommand.CanExecute(null))
             _viewModel.JoinCommand.Execute(null);
     }
 
     private void OnNameEntryFocused(object? sender, FocusEventArgs e)
     {
-        // AdjustResize handles keyboard visibility automatically
+        // Intentionally left blank:
+        // The AdjustResize window soft input mode handles keyboard overlap automatically
     }
 }

@@ -30,6 +30,7 @@ public class AudioRecorderService : IAudioRecorderService
         try
         {
 #if ANDROID
+            // Android requires explicit runtime permission request for microphone
             var status = await Permissions.RequestAsync<Permissions.Microphone>();
             if (status != PermissionStatus.Granted)
             {
@@ -38,6 +39,7 @@ public class AudioRecorderService : IAudioRecorderService
             }
 #endif
 
+            // Initialize the audio recorder instance and begin capturing hardware input
             _recorder = _audioManager.CreateRecorder();
             await _recorder.StartAsync();
             return true;
@@ -102,7 +104,8 @@ public class AudioRecorderService : IAudioRecorderService
                 return null;
             }
 
-            // Validate WAV header
+            // Validate WAV header to ensure the file format is correct and playable.
+            // A valid WAV file always starts with "RIFF" and has "WAVE" at offset 8.
             bool isValidWav = bytes.Length > 44 &&
                 bytes[0] == 'R' && bytes[1] == 'I' && bytes[2] == 'F' && bytes[3] == 'F' &&
                 bytes[8] == 'W' && bytes[9] == 'A' && bytes[10] == 'V' && bytes[11] == 'E';
@@ -149,13 +152,15 @@ public class AudioRecorderService : IAudioRecorderService
             }
 
 #if WINDOWS
-            // On Windows, CreatePlayer(string) incorrectly prepends ms-appx:///Assets/ to the path.
-            // Always use MemoryStream on Windows for reliable playback.
+            // On Windows, CreatePlayer(string) incorrectly prepends "ms-appx:///Assets/" to absolute paths,
+            // which breaks playback for dynamically generated or downloaded files.
+            // Using a MemoryStream bypasses this Windows-specific bug.
             var ms = new MemoryStream(audioData);
             _player = _audioManager.CreatePlayer(ms);
             _player.Play();
 #else
-            // On other platforms, write to temp file first for better compatibility
+            // On Android and iOS, playing directly from a MemoryStream can sometimes be unreliable
+            // with the MAUI Audio plugin. Writing to a temporary file ensures stable playback.
             var tempFile = Path.Combine(FileSystem.CacheDirectory, $"play_{Guid.NewGuid()}.wav");
             await File.WriteAllBytesAsync(tempFile, audioData);
             _lastPlaybackFile = tempFile;
@@ -167,7 +172,7 @@ public class AudioRecorderService : IAudioRecorderService
             }
             catch
             {
-                // Fallback: try playing from stream
+                // Fallback: try playing from stream if file playback fails
                 var stream = new MemoryStream(audioData);
                 _player = _audioManager.CreatePlayer(stream);
                 _player.Play();
@@ -188,14 +193,17 @@ public class AudioRecorderService : IAudioRecorderService
     {
         try
         {
+            // Halt any currently active audio output
             if (_player?.IsPlaying == true)
             {
                 _player.Stop();
             }
+            
+            // Dispose the player to release native audio hardware resources
             _player?.Dispose();
             _player = null;
 
-            // Clean up old playback file
+            // Clean up the temporary WAV file that was written to disk for playback
             if (!string.IsNullOrEmpty(_lastPlaybackFile) && File.Exists(_lastPlaybackFile))
             {
                 try { File.Delete(_lastPlaybackFile); } catch { }

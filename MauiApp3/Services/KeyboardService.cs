@@ -17,7 +17,10 @@ public static class KeyboardService
     /// <param name="height">The new keyboard height.</param>
     public static void NotifyHeightChanged(double height)
     {
+        // Store the height statically for polling
         KeyboardHeight = height;
+        
+        // Notify all active event listeners (like chat views) so they can adjust their padding dynamically
         HeightChanged?.Invoke(null, EventArgs.Empty);
     }
 }

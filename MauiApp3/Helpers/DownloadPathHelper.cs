@@ -72,6 +72,8 @@ public static class DownloadPathHelper
 
         if ((int)Android.OS.Build.VERSION.SdkInt < (int)Android.OS.BuildVersionCodes.Q)
         {
+            // For older versions (Android 9/Pie and below), we must manually request
+            // storage permissions and use traditional file IO to save to the public directory.
             var status = await Permissions.RequestAsync<Permissions.StorageWrite>();
             if (status != PermissionStatus.Granted)
                 throw new UnauthorizedAccessException("Storage permission denied.");
@@ -84,18 +86,21 @@ public static class DownloadPathHelper
             return targetPath;
         }
 
+        // For Android 10 (Q) and newer, scoped storage applies.
+        // We use MediaStore to insert a new file record safely into the Downloads folder.
         var relativePath = Path.Combine(Android.OS.Environment.DirectoryDownloads, appFolderName);
         var values = new Android.Content.ContentValues();
         values.Put(Android.Provider.MediaStore.IMediaColumns.DisplayName, fileName);
         values.Put(Android.Provider.MediaStore.IMediaColumns.MimeType, "application/octet-stream");
         values.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, relativePath);
-        values.Put(Android.Provider.MediaStore.IMediaColumns.IsPending, 1);
+        values.Put(Android.Provider.MediaStore.IMediaColumns.IsPending, 1); // Mark as pending while writing
 
         var resolver = Android.App.Application.Context.ContentResolver;
         var uri = resolver?.Insert(Android.Provider.MediaStore.Downloads.ExternalContentUri, values);
         if (uri == null)
             throw new InvalidOperationException("Unable to create download entry.");
 
+        // Open an output stream through the ContentResolver to safely write to the sandboxed path
         using (var stream = resolver.OpenOutputStream(uri))
         {
             if (stream == null)
@@ -105,6 +110,7 @@ public static class DownloadPathHelper
             await stream.FlushAsync();
         }
 
+        // Finalize the file by clearing the IsPending flag
         values.Clear();
         values.Put(Android.Provider.MediaStore.IMediaColumns.IsPending, 0);
         resolver.Update(uri, values, null, null);

@@ -66,6 +66,9 @@ public class LobbyViewModel : INotifyPropertyChanged
         _chatService.MessageReceived += OnMessageReceived;
     }
 
+    /// <summary>
+    /// Handles incoming messages globally to increment unread badges when the user is not actively viewing a chat.
+    /// </summary>
     private void OnMessageReceived(object? sender, ChatMessage msg)
     {
         if (msg.IsMine) return;
@@ -97,6 +100,9 @@ public class LobbyViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Adds a newly discovered peer to the UI list immediately.
+    /// </summary>
     private void OnPeerDiscovered(object? sender, Peer peer)
     {
         MainThread.BeginInvokeOnMainThread(() =>
@@ -109,6 +115,9 @@ public class LobbyViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Removes a peer from the UI list when they disconnect or time out.
+    /// </summary>
     private void OnPeerLost(object? sender, Peer peer)
     {
         MainThread.BeginInvokeOnMainThread(() =>
@@ -122,19 +131,22 @@ public class LobbyViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Fully synchronizes the local UI peer list with the current network state provided by the discovery service.
+    /// </summary>
     private void OnPeersUpdated(object? sender, List<Peer> peers)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            // Sync list
+            // Create hashsets for O(1) lookups of IP addresses to determine diffs
             var currentIPs = OnlinePeers.Select(p => p.IPAddress).ToHashSet();
             var newIPs = peers.Select(p => p.IPAddress).ToHashSet();
 
-            // Remove departed
+            // Identify peers that dropped offline and remove them from the UI list
             var toRemove = OnlinePeers.Where(p => !newIPs.Contains(p.IPAddress)).ToList();
             foreach (var p in toRemove) OnlinePeers.Remove(p);
 
-            // Add new
+            // Identify newly discovered peers and append them to the UI list
             foreach (var p in peers)
             {
                 if (!currentIPs.Contains(p.IPAddress))
@@ -143,6 +155,9 @@ public class LobbyViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>
+    /// Manually triggers a refresh of the peer list by pulling the latest active peers from the discovery service.
+    /// </summary>
     private void RefreshPeers()
     {
         var peers = _discoveryService.GetActivePeers();
@@ -154,12 +169,17 @@ public class LobbyViewModel : INotifyPropertyChanged
     }
 
     /// <summary>Resets the unread count for the group chat.</summary>
-    public void ResetGroupUnread() => GroupUnreadCount = 0;
+    public void ResetGroupUnread()
+    {
+        // Clear the notification badge when the user opens the group chat
+        GroupUnreadCount = 0;
+    }
 
     /// <summary>Resets the unread count for a specific peer.</summary>
     /// <param name="peerIP">The IP address of the peer.</param>
     public void ResetPeerUnread(string peerIP)
     {
+        // Find the specific peer model and clear its individual notification badge
         var peer = OnlinePeers.FirstOrDefault(p => p.IPAddress == peerIP);
         if (peer != null)
             peer.UnreadCount = 0;
@@ -167,12 +187,22 @@ public class LobbyViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Triggers the PropertyChanged event to notify UI bindings that a property has been updated.
+    /// </summary>
     protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+        // Safely invoke the PropertyChanged event if there are any UI subscribers attached
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+    /// <summary>
+    /// Updates the backing field of a property and triggers a UI update only if the value actually changed.
+    /// </summary>
+    /// <returns>True if the value was changed; false otherwise.</returns>
     protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
     {
+        // Prevent redundant UI updates and loops if the value hasn't actually changed
         if (EqualityComparer<T>.Default.Equals(backingStore, value)) return false;
+        
         backingStore = value;
         OnPropertyChanged(propertyName);
         return true;

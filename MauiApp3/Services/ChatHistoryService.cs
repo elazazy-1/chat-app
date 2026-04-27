@@ -20,10 +20,12 @@ public class ChatHistoryService
     /// <returns>An ObservableCollection of chat messages.</returns>
     public ObservableCollection<ChatMessage> GetPrivateMessages(string peerIP)
     {
+        // Try to fetch existing message history for this IP
         if (!_privateMessages.TryGetValue(peerIP, out var messages))
         {
+            // This is our first time chatting with this peer, instantiate a new collection
             messages = new ObservableCollection<ChatMessage>();
-            _privateMessages[peerIP] = messages;
+            _privateMessages[peerIP] = messages; // Save it to the dictionary for future access
         }
         return messages;
     }
