@@ -4,6 +4,10 @@ using MauiApp3.Models;
 
 namespace MauiApp3.Features.Chat.Group;
 
+/// <summary>
+/// The code-behind for the Group Chat page, handling UI lifecycle events,
+/// scrolling behaviors, and workarounds for CollectionView rendering issues.
+/// </summary>
 public partial class GroupChatPage : ContentPage
 {
     private readonly LobbyViewModel _lobbyVm;

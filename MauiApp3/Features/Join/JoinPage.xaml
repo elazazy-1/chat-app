@@ -8,7 +8,11 @@
 
     <Grid RowDefinitions="*,Auto,*" RowSpacing="0">
 
-        <!-- Top spacer -->
+        <!-- 
+            Top Section: 
+            Displays the application logo and a welcoming message explaining the app's purpose.
+            Pushed towards the bottom of the top row using VerticalOptions="End".
+        -->
         <VerticalStackLayout Grid.Row="0" VerticalOptions="End" HorizontalOptions="Center"
                              Margin="0,0,0,16">
             <!-- App Icon -->
@@ -41,7 +45,11 @@
                    HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
 
-        <!-- Join Card -->
+        <!-- 
+            Join Card Section:
+            A styled card containing the form for the user to input their display name.
+            Includes the text field, join button, and a loading indicator.
+        -->
         <Border Grid.Row="1" BackgroundColor="{StaticResource AppSurface}"
                 Stroke="{StaticResource AppDivider}"
                 StrokeThickness="1"
@@ -68,6 +76,10 @@
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
+                <!-- 
+                    Name Input Field:
+                    Custom Border wrapping a Maui Entry control for styling with an icon. 
+                -->
                 <Border BackgroundColor="{StaticResource AppSurfaceAlt}"
                         Stroke="{StaticResource AppDivider}"
                         StrokeThickness="1"
@@ -117,7 +129,10 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- Bottom spacer with footer -->
+        <!-- 
+            Bottom Footer Section:
+            Informational text reassuring the user about how the app connects locally. 
+        -->
         <VerticalStackLayout Grid.Row="2" VerticalOptions="Start" HorizontalOptions="Center"
                              Margin="0,20,0,0">
             <Label Text="No internet required. Works over your Wi-Fi network."

@@ -8,6 +8,10 @@ using MauiApp3.Services;
 
 namespace MauiApp3.Features.Chat.Private;
 
+/// <summary>
+/// ViewModel for the Private Chat screen. Handles sending/receiving messages,
+/// files, and audio recordings specifically targeted to a single peer.
+/// </summary>
 [QueryProperty(nameof(PeerIP), "peerIP")]
 [QueryProperty(nameof(PeerName), "peerName")]
 public class PrivateChatViewModel : INotifyPropertyChanged, IDisposable

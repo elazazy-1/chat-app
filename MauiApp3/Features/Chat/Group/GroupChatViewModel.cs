@@ -8,6 +8,10 @@ using MauiApp3.Services;
 
 namespace MauiApp3.Features.Chat.Group;
 
+/// <summary>
+/// ViewModel for the Group Chat screen. Handles sending/receiving messages,
+/// files, audio recordings, and tracking peer join/leave events.
+/// </summary>
 public class GroupChatViewModel : INotifyPropertyChanged
 {
     private readonly IChatService _chatService;

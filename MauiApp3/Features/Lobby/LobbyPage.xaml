@@ -9,7 +9,11 @@
 
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
 
-        <!-- Header -->
+        <!-- 
+            Header Section:
+            Displays the logged-in user's display name and their dynamically resolved local IP address.
+            Styled with a gradient background defined in the resource dictionary.
+        -->
         <Border Grid.Row="0" Background="{StaticResource HeaderGradientBrush}" Padding="20,18" StrokeShape="Rectangle">
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout>
@@ -30,11 +34,18 @@
             </Grid>
         </Border>
 
-        <!-- Content -->
+        <!-- 
+            Main Content Section:
+            A scrollable layout that houses the Group Chat entry point and the list of online peers.
+        -->
         <ScrollView Grid.Row="1" Padding="16,12">
             <VerticalStackLayout Spacing="16">
 
-                <!-- Group Chat Card -->
+                <!-- 
+                    Group Chat Card:
+                    A distinct, interactive card allowing the user to navigate to the global network chat.
+                    Includes a badge to indicate unread group messages.
+                -->
                 <Border BackgroundColor="{StaticResource AppSurface}" Padding="0"
                         StrokeShape="RoundRectangle 18"
                         Stroke="{StaticResource AppDivider}">
@@ -55,7 +66,7 @@
                             <Label Text="Group Chat" FontSize="16" FontFamily="OpenSansSemibold" TextColor="{StaticResource AppTextPrimary}" />
                             <Label Text="Chat with everyone on the network" FontSize="12" TextColor="{StaticResource AppTextSecondary}" />
                         </VerticalStackLayout>
-                        <!-- Unread badge -->
+                        <!-- Unread message indicator for the group chat, visibility controlled by a converter -->
                         <Border Grid.Column="2" BackgroundColor="{StaticResource UnreadBadge}"
                                 StrokeShape="RoundRectangle 12"
                                 MinimumWidthRequest="24" HeightRequest="24"
@@ -67,14 +78,21 @@
                     </Grid>
                 </Border>
 
-                <!-- Online Users Header -->
+                <!-- 
+                    Online Users Header:
+                    Displays the section title and the live count of discovered active peers.
+                -->
                 <Grid ColumnDefinitions="*,Auto" Margin="4,8,4,0">
                     <Label Text="Online Users" FontSize="16" FontFamily="OpenSansSemibold" TextColor="{StaticResource AppTextPrimary}" />
                     <Label Grid.Column="1" Text="{Binding OnlinePeers.Count, StringFormat='{0} online'}"
                            FontSize="13" TextColor="{StaticResource OnlineDot}" VerticalOptions="Center" />
                 </Grid>
 
-                <!-- Online Users List -->
+                <!-- 
+                    Online Users List:
+                    A CollectionView bound to the ObservableCollection of peers. 
+                    Automatically updates as peers join or leave the network.
+                -->
                 <CollectionView ItemsSource="{Binding OnlinePeers}"
                                 SelectionMode="None"
                                 Margin="0,0,0,0">

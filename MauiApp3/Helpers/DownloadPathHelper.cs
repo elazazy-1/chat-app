@@ -4,8 +4,18 @@ using Microsoft.Maui.Storage;
 
 namespace MauiApp3.Helpers;
 
+/// <summary>
+/// Provides cross-platform functionality for saving downloaded files to the device.
+/// </summary>
 public static class DownloadPathHelper
 {
+    /// <summary>
+    /// Saves byte array data to the appropriate downloads folder for the platform.
+    /// On Android Q and above, uses MediaStore. On Windows/older Android, uses file system.
+    /// </summary>
+    /// <param name="fileName">The desired name of the file.</param>
+    /// <param name="data">The byte data of the file to save.</param>
+    /// <returns>The path or URI where the file was saved.</returns>
     public static async Task<string> SaveBytesAsync(string fileName, byte[] data)
     {
     var safeFileName = Path.GetFileName(fileName);
@@ -22,6 +32,10 @@ public static class DownloadPathHelper
 #endif
     }
 
+    /// <summary>
+    /// Determines the correct base downloads directory for the application.
+    /// </summary>
+    /// <returns>The path to the app's specific downloads folder.</returns>
     public static string GetAppDownloadsFolder()
     {
         var appFolderName = SanitizeFolderName(AppInfo.Current.Name ?? "App");
@@ -48,6 +62,10 @@ public static class DownloadPathHelper
     }
 
 #if ANDROID
+    /// <summary>
+    /// Android-specific implementation for saving files, handling Scoped Storage (MediaStore) for Android Q+
+    /// and traditional file system saving for older versions.
+    /// </summary>
     private static async Task<string> SaveBytesAndroidAsync(string fileName, byte[] data)
     {
         var appFolderName = SanitizeFolderName(AppInfo.Current.Name ?? "App");
@@ -95,6 +113,9 @@ public static class DownloadPathHelper
     }
 #endif
 
+    /// <summary>
+    /// Cleans the application name to ensure it's a valid directory name.
+    /// </summary>
     private static string SanitizeFolderName(string name)
     {
         var invalid = Path.GetInvalidFileNameChars();

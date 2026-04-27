@@ -1,5 +1,8 @@
 namespace MauiApp3.Features.Join;
 
+/// <summary>
+/// Code-behind for the Join page. Handles UI interactions before the user enters the lobby.
+/// </summary>
 public partial class JoinPage : ContentPage
 {
     private readonly JoinViewModel _viewModel;

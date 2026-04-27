@@ -2,6 +2,10 @@ using Plugin.Maui.Audio;
 
 namespace MauiApp3.Services;
 
+/// <summary>
+/// Service responsible for handling microphone recording and audio playback
+/// using the Plugin.Maui.Audio library.
+/// </summary>
 public class AudioRecorderService : IAudioRecorderService
 {
     private readonly IAudioManager _audioManager;
@@ -9,6 +13,7 @@ public class AudioRecorderService : IAudioRecorderService
     private IAudioPlayer? _player;
     private string? _lastPlaybackFile;
 
+    /// <summary>Indicates if an audio recording is currently active.</summary>
     public bool IsRecording => _recorder?.IsRecording ?? false;
 
     public AudioRecorderService(IAudioManager audioManager)
@@ -16,6 +21,10 @@ public class AudioRecorderService : IAudioRecorderService
         _audioManager = audioManager;
     }
 
+    /// <summary>
+    /// Requests necessary microphone permissions and starts an audio recording.
+    /// </summary>
+    /// <returns>True if recording started successfully.</returns>
     public async Task<bool> StartRecordingAsync()
     {
         try
@@ -41,6 +50,10 @@ public class AudioRecorderService : IAudioRecorderService
         }
     }
 
+    /// <summary>
+    /// Stops the current recording and returns the audio data as a byte array.
+    /// </summary>
+    /// <returns>A byte array containing the WAV audio data, or null on failure.</returns>
     public async Task<byte[]?> StopRecordingAsync()
     {
         try
@@ -109,6 +122,10 @@ public class AudioRecorderService : IAudioRecorderService
         }
     }
 
+    /// <summary>
+    /// Plays an audio file from a byte array. Stops any currently playing audio first.
+    /// </summary>
+    /// <param name="audioData">The WAV file bytes to play.</param>
     public async Task PlayAudioAsync(byte[] audioData)
     {
         try
@@ -164,6 +181,9 @@ public class AudioRecorderService : IAudioRecorderService
         }
     }
 
+    /// <summary>
+    /// Immediately stops audio playback and cleans up resources.
+    /// </summary>
     public void StopPlayback()
     {
         try

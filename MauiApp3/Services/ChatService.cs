@@ -6,12 +6,17 @@ using MauiApp3.Models;
 
 namespace MauiApp3.Services;
 
+/// <summary>
+/// Service responsible for TCP communication, enabling sending and receiving
+/// text, files, and audio messages between peers.
+/// </summary>
 public class ChatService : IChatService, IDisposable
 {
     private TcpListener? _listener;
     private CancellationTokenSource? _cts;
     private readonly ILanDiscoveryService _discoveryService;
 
+    /// <summary>Event raised when a new chat message is received.</summary>
     public event EventHandler<ChatMessage>? MessageReceived;
 
     public ChatService(ILanDiscoveryService discoveryService)
@@ -19,6 +24,10 @@ public class ChatService : IChatService, IDisposable
         _discoveryService = discoveryService;
     }
 
+    /// <summary>
+    /// Starts the TCP listener to accept incoming connections on a specific port.
+    /// </summary>
+    /// <param name="port">The port to listen on.</param>
     public async Task StartListeningAsync(int port)
     {
         _cts = new CancellationTokenSource();
@@ -29,6 +38,9 @@ public class ChatService : IChatService, IDisposable
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Stops the TCP listener and cancels any pending operations.
+    /// </summary>
     public async Task StopListeningAsync()
     {
         _cts?.Cancel();

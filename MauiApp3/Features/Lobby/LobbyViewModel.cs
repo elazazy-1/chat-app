@@ -9,25 +9,39 @@ using MauiApp3.Services;
 
 namespace MauiApp3.Features.Lobby;
 
+/// <summary>
+/// ViewModel for the Lobby screen, showing the list of active peers
+/// and handling navigation to group or private chats.
+/// </summary>
 public class LobbyViewModel : INotifyPropertyChanged
 {
     private readonly ILanDiscoveryService _discoveryService;
     private readonly IChatService _chatService;
     private int _groupUnreadCount;
 
+    /// <summary>List of currently online peers.</summary>
     public ObservableCollection<Peer> OnlinePeers { get; } = new();
 
+    /// <summary>Number of unread messages in the group chat.</summary>
     public int GroupUnreadCount
     {
         get => _groupUnreadCount;
         set => SetProperty(ref _groupUnreadCount, value);
     }
 
+    /// <summary>The local user's display name.</summary>
     public string DisplayName => _discoveryService.DisplayName;
+    
+    /// <summary>The local user's IP address.</summary>
     public string LocalIP => _discoveryService.LocalIP;
 
+    /// <summary>Command to open the group chat page.</summary>
     public ICommand OpenGroupChatCommand { get; }
+    
+    /// <summary>Command to open a private chat with a specific peer.</summary>
     public ICommand OpenPrivateChatCommand { get; }
+    
+    /// <summary>Command to manually refresh the list of peers.</summary>
     public ICommand RefreshCommand { get; }
 
     public LobbyViewModel(ILanDiscoveryService discoveryService, IChatService chatService)
@@ -139,8 +153,11 @@ public class LobbyViewModel : INotifyPropertyChanged
         });
     }
 
+    /// <summary>Resets the unread count for the group chat.</summary>
     public void ResetGroupUnread() => GroupUnreadCount = 0;
 
+    /// <summary>Resets the unread count for a specific peer.</summary>
+    /// <param name="peerIP">The IP address of the peer.</param>
     public void ResetPeerUnread(string peerIP)
     {
         var peer = OnlinePeers.FirstOrDefault(p => p.IPAddress == peerIP);

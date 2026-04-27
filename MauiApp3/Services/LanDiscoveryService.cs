@@ -7,6 +7,10 @@ using MauiApp3.Models;
 
 namespace MauiApp3.Services;
 
+/// <summary>
+/// Service responsible for finding other peers on the local network
+/// using UDP broadcasting and listening for discovery packets.
+/// </summary>
 public class LanDiscoveryService : ILanDiscoveryService, IDisposable
 {
     private const int DiscoveryPort = 5000;
@@ -20,13 +24,22 @@ public class LanDiscoveryService : ILanDiscoveryService, IDisposable
     private readonly Dictionary<string, Peer> _peers = new();
     private readonly object _lock = new();
 
+    /// <summary>Event raised when a new peer joins the network.</summary>
     public event EventHandler<Peer>? PeerDiscovered;
+    
+    /// <summary>Event raised when a peer leaves or times out.</summary>
     public event EventHandler<Peer>? PeerLost;
+    
+    /// <summary>Event raised whenever the list of active peers changes.</summary>
     public event EventHandler<List<Peer>>? PeersUpdated;
 
     public string LocalIP { get; private set; } = string.Empty;
     public string DisplayName { get; private set; } = string.Empty;
 
+    /// <summary>
+    /// Gets the current list of online peers.
+    /// </summary>
+    /// <returns>A list of active Peer objects.</returns>
     public List<Peer> GetActivePeers()
     {
         lock (_lock)
@@ -35,6 +48,10 @@ public class LanDiscoveryService : ILanDiscoveryService, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts broadcasting the device's presence and listening for other peers.
+    /// </summary>
+    /// <param name="displayName">The name to broadcast to others.</param>
     public async Task StartBroadcastingAsync(string displayName)
     {
         DisplayName = displayName;
@@ -56,6 +73,9 @@ public class LanDiscoveryService : ILanDiscoveryService, IDisposable
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Stops broadcasting and listening, and sends a "leaving" packet to other peers.
+    /// </summary>
     public async Task StopBroadcastingAsync()
     {
         try

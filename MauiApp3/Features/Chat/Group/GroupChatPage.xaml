@@ -10,7 +10,10 @@
 
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
 
-        <!-- Header -->
+        <!-- 
+            Header Section:
+            Provides navigation back to the lobby and displays context about the group chat.
+        -->
         <Border Grid.Row="0" Background="{StaticResource HeaderGradientBrush}" Padding="12,14" StrokeShape="Rectangle">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <Button Grid.Column="0" Text="&lt;" FontSize="24"
@@ -29,7 +32,13 @@
             </Grid>
         </Border>
 
-        <!-- Messages + Emoji + Input -->
+        <!-- 
+            Main Chat Layout:
+            A 3-row grid containing:
+            1. Scrollable Messages List
+            2. Emoji Selection Panel (collapsible)
+            3. Bottom Input Bar for typing or recording audio
+        -->
         <Grid Grid.Row="1" RowDefinitions="*,Auto,Auto" RowSpacing="0">
             <CollectionView Grid.Row="0"
                             x:Name="MessagesCollection"
@@ -39,7 +48,11 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:ChatMessage">
                         <Grid Padding="4,2">
-                            <!-- System message -->
+                            <!-- 
+                                System Message Template:
+                                Displays informational messages like users joining or leaving the chat.
+                                Centered horizontally, styled simply.
+                            -->
                             <Frame BackgroundColor="{StaticResource ChatSystemMessage}" CornerRadius="12" Padding="10,6"
                                    HasShadow="False" HorizontalOptions="Center"
                                    IsVisible="{Binding ., Converter={StaticResource SystemMessageVisibilityConverter}}">
@@ -47,7 +60,11 @@
                                        HorizontalTextAlignment="Center" />
                             </Frame>
 
-                            <!-- Chat bubble -->
+                            <!-- 
+                                User Chat Bubble Template:
+                                Dynamic alignment (left for received, right for sent) and coloring.
+                                Holds Text, File, or Audio content depending on the message type.
+                            -->
                             <VerticalStackLayout
                                 IsVisible="{Binding ., Converter={StaticResource NotSystemMessageVisibilityConverter}}"
                                 HorizontalOptions="{Binding ., Converter={StaticResource MessageAlignmentConverter}}">
@@ -61,12 +78,12 @@
                                        CornerRadius="16" Padding="12,8" HasShadow="False"
                                        MaximumWidthRequest="300">
                                     <VerticalStackLayout Spacing="4">
-                                        <!-- Text content -->
+                                        <!-- Text content: Standard chat text, handles text wrapping -->
                                         <Label Text="{Binding Content}" FontSize="15" TextColor="{StaticResource AppTextPrimary}"
                                                IsVisible="{Binding ., Converter={StaticResource IsTextMessageConverter}}"
                                                LineBreakMode="WordWrap" />
 
-                                        <!-- File content -->
+                                        <!-- File content: Shows an icon, filename, and a save button -->
                                         <VerticalStackLayout IsVisible="{Binding ., Converter={StaticResource IsFileMessageConverter}}" Spacing="4">
                                             <HorizontalStackLayout Spacing="6">
                                                 <Label Text="&#x1F4CE;" FontSize="18" VerticalOptions="Center" />
@@ -80,7 +97,7 @@
                                                     CommandParameter="{Binding .}" />
                                         </VerticalStackLayout>
 
-                                        <!-- Audio content -->
+                                        <!-- Audio content: Shows a play button and descriptive text for voice messages -->
                                         <HorizontalStackLayout IsVisible="{Binding ., Converter={StaticResource IsAudioMessageConverter}}" Spacing="8">
                                             <Button Text="&#x25B6;" FontSize="16" WidthRequest="36" HeightRequest="36"
                                                     BackgroundColor="{StaticResource AccentBlue}" TextColor="White"
@@ -90,7 +107,7 @@
                                             <Label Text="Voice Message" FontSize="13" TextColor="{StaticResource AppTextSecondary}" VerticalOptions="Center" />
                                         </HorizontalStackLayout>
 
-                                        <!-- Timestamp -->
+                                        <!-- Timestamp: Small text at the bottom right of the bubble indicating when it was sent -->
                                         <Label Text="{Binding Timestamp, Converter={StaticResource TimestampConverter}}"
                                                FontSize="10" TextColor="{StaticResource AppTextHint}" HorizontalTextAlignment="End" />
                                     </VerticalStackLayout>
@@ -101,7 +118,10 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Emoji Panel -->
+            <!-- 
+                Emoji Panel:
+                A toggleable grid of emojis. Its visibility is bound to IsEmojiPanelVisible in the ViewModel.
+            -->
             <Border Grid.Row="1" BackgroundColor="{StaticResource AppSurface}" Padding="8"
                     StrokeShape="Rectangle"
                     IsVisible="{Binding IsEmojiPanelVisible}" HeightRequest="180">
@@ -123,7 +143,10 @@
                 </CollectionView>
             </Border>
 
-            <!-- Input Bar -->
+            <!-- 
+                Input Bar:
+                Contains all action buttons (Emoji, Attachment, Record Audio, Send) and the main text entry field.
+            -->
             <Border Grid.Row="2" x:Name="InputBarFrame" BackgroundColor="{StaticResource AppSurface}"
                     Stroke="{StaticResource AppDivider}" StrokeThickness="1" Padding="8,6" StrokeShape="Rectangle">
                 <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="6">

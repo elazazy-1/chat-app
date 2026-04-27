@@ -1,7 +1,11 @@
 namespace MauiApp3.Helpers;
 
+/// <summary>
+/// Provides a predefined list of emojis used within the application.
+/// </summary>
 public static class EmojiData
 {
+    /// <summary>An array containing smiley face emojis.</summary>
     public static readonly string[] Smileys =
     [
         "\U0001F600", "\U0001F603", "\U0001F604", "\U0001F601", "\U0001F606",
@@ -16,6 +20,7 @@ public static class EmojiData
         "\U0001F637", "\U0001F912", "\U0001F915", "\U0001F922", "\U0001F92E"
     ];
 
+    /// <summary>An array containing hand gesture and symbol emojis.</summary>
     public static readonly string[] Gestures =
     [
         "\U0001F44D", "\U0001F44E", "\U0001F44A", "\u270C\uFE0F", "\U0001F91E",
@@ -24,5 +29,6 @@ public static class EmojiData
         "\u2B50", "\U0001F31F", "\U0001F389", "\U0001F38A", "\U0001F381"
     ];
 
+    /// <summary>An array containing all available emojis (Smileys + Gestures).</summary>
     public static readonly string[] All = [.. Smileys, .. Gestures];
 }
