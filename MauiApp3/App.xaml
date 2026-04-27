@@ -1,4 +1,4 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MauiApp3"
@@ -7,12 +7,21 @@
              UserAppTheme="Light">
     <Application.Resources>
         <ResourceDictionary>
+            <!-- 
+                Global Resource Dictionaries:
+                Merging external dictionaries allows us to keep the main App.xaml clean.
+                Colors.xaml contains our theme palette, while Styles.xaml contains global control styling.
+            -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Converters -->
+            <!-- 
+                Global Converters:
+                These value converters are instantiated once here and can be referenced via StaticResource
+                from any XAML page in the application to control UI state and bindings.
+            -->
             <conv:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
             <conv:MessageBubbleColorConverter x:Key="MessageBubbleColorConverter" />
             <conv:BoolToColorConverter x:Key="BoolToColorConverter" />

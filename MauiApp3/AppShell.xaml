@@ -5,15 +5,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:join="clr-namespace:MauiApp3.Features.Join"
     xmlns:lobby="clr-namespace:MauiApp3.Features.Lobby"
+    <!-- 
+        AppShell defines the visual hierarchy and routing structure of the application.
+        FlyoutBehavior is Disabled because we manage navigation programmatically via GoToAsync.
+        NavBarIsVisible is False because we use custom headers across all pages.
+    -->
     Title="DS Project"
     FlyoutBehavior="Disabled"
     Shell.NavBarIsVisible="False">
 
+    <!-- 
+        Entry Point: The initial page where users input their display name.
+    -->
     <ShellContent
         Title="Join"
         ContentTemplate="{DataTemplate join:JoinPage}"
         Route="JoinPage" />
 
+    <!-- 
+        Main Hub: The page where users see online peers and navigate to chats.
+    -->
     <ShellContent
         Title="Lobby"
         ContentTemplate="{DataTemplate lobby:LobbyPage}"

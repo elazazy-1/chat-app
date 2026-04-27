@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 using MauiApp3.Features.Chat.Group;
 using MauiApp3.Features.Chat.Private;
@@ -17,24 +17,26 @@ namespace MauiApp3
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
+                    // Register custom fonts so they can be referenced globally in XAML
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Services
-            builder.Services.AddSingleton(AudioManager.Current);
-            builder.Services.AddSingleton<ChatHistoryService>();
-            builder.Services.AddSingleton<ILanDiscoveryService, LanDiscoveryService>();
-            builder.Services.AddSingleton<IChatService, ChatService>();
-            builder.Services.AddSingleton<IAudioRecorderService, AudioRecorderService>();
+            // Services: Registered as Singletons to share state across the entire application lifecycle.
+            builder.Services.AddSingleton(AudioManager.Current); // Plugin.Maui.Audio
+            builder.Services.AddSingleton<ChatHistoryService>(); // Stores message lists
+            builder.Services.AddSingleton<ILanDiscoveryService, LanDiscoveryService>(); // UDP Network
+            builder.Services.AddSingleton<IChatService, ChatService>(); // TCP Network
+            builder.Services.AddSingleton<IAudioRecorderService, AudioRecorderService>(); // Audio Capture
 
-            // ViewModels
+            // ViewModels: Defines whether states should persist or recreate.
+            // Transients are recreated every time the page opens. Singletons retain their state.
             builder.Services.AddTransient<JoinViewModel>();
-            builder.Services.AddSingleton<LobbyViewModel>();
-            builder.Services.AddSingleton<GroupChatViewModel>();
-            builder.Services.AddTransient<PrivateChatViewModel>();
+            builder.Services.AddSingleton<LobbyViewModel>(); // Maintain peer list state globally
+            builder.Services.AddSingleton<GroupChatViewModel>(); // Maintain group chat context
+            builder.Services.AddTransient<PrivateChatViewModel>(); // Recreate for different peers
 
-            // Pages
+            // Pages: Corresponding UI views for the ViewModels
             builder.Services.AddTransient<JoinPage>();
             builder.Services.AddSingleton<LobbyPage>();
             builder.Services.AddTransient<GroupChatPage>();
